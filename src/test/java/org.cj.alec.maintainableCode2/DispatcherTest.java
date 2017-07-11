@@ -99,24 +99,24 @@ public class DispatcherTest {
     }
 
     @Test
-    public void noRquestAtAll() throws IOException {
-        //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubResponse actual = new StubResponse();
-
-        //when
-        dispatcher.handle(null, actual);
-
-        //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Something went wrong"));
-    }
-
-    @Test
     public void validTargetPlusGarbage() throws IOException{
         //given
         final HttpServletRequestHandler dispatcher = new Dispatcher();
         final StubRequest request = new StubRequest("target=world&asdf", "/hello");
+        final StubResponse actual = new StubResponse();
+
+        //when
+        dispatcher.handle(request, actual);
+        //then
+        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_OK));
+        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Hello, world!"));
+    }
+
+    @Test
+    public void ignoreExtraThings() throws IOException {
+        //given
+        final HttpServletRequestHandler dispatcher = new Dispatcher();
+        final StubRequest request = new StubRequest("cat=dog&target=world&foo=bar", "/hello");
         final StubResponse actual = new StubResponse();
 
         //when

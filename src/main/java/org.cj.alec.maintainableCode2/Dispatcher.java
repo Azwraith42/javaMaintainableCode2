@@ -5,73 +5,87 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class Dispatcher implements HttpServletRequestHandler {
-    private Map<String, BiConsumer<String, HttpServletResponse> > commandMap;
+public class Dispatcher implements HttpServletRequestHandler{
+    private Map<String, BiConsumer<HttpServletResponse, String>> commandMap;
 
-    Dispatcher(){
+        Dispatcher(){
         commandMap = new HashMap<>();
         commandMap.put("/hello",  this::sayHello);
         commandMap.put("/length", this::displayLength);
     }
 
+
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            handleWithoutExceptionHandling(request, response);
-        } catch(Exception ex){
+    public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try{
+            tryOrError(request, response);
+        }catch(Exception e){
             setResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Something went wrong");
         }
+
     }
 
-    private void handleWithoutExceptionHandling(HttpServletRequest request, HttpServletResponse response) {
+    private void tryOrError(HttpServletRequest request, HttpServletResponse response) {
         String path = request.getRequestURI();
         String query = request.getQueryString();
-        Optional<String> maybeTarget = maybeGetSingleParameterFromQuery(query, "target");
+        Optional<String> parameter = GetSingleStringParameterFromQuery(request.getQueryString());
 
-        maybeTarget.ifPresent( (target) -> commandMap.getOrDefault(path, this::notFound).accept(target, response));
-        if(!maybeTarget.isPresent()) badRequest(response);
+        parameter.ifPresent((target) -> commandMap.getOrDefault(path, this::notFound).accept(response, target));
+        if(!parameter.isPresent()) badRequest(response);
     }
 
-    private Optional<String> maybeGetSingleParameterFromQuery(String query, String target){
-        String[] pairs = query.split("&");
-        List<String> matches = new ArrayList<>();
-        for( String pair : pairs){
-            String [] keys = pair.split("=");
-            if(keys.length < 2) continue;
-            String key = keys[0];
-            if(target.equals(key)){
-                String value = keys[1];
-                matches.add(value);
-            }
+    private void badRequest(HttpServletResponse response) {
+        setResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Bad Request, exactly one target param expected");
+    }
+
+    private void displayLength(HttpServletResponse response, String parameter) {
+        final String message = String.format("Length: %d", parameter.length());
+        setResponse(response, HttpServletResponse.SC_OK, message);
+    }
+
+    private void sayHello(HttpServletResponse response, String parameter) {
+        final String message = String.format("Hello, %s!", parameter);
+        setResponse(response, HttpServletResponse.SC_OK, message);
+    }
+
+    private Optional<String> GetSingleStringParameterFromQuery(String queryString) {
+        List<String> matches = getStrings(queryString);
+        int numTargets = matches.toArray().length;
+        if(numTargets == 1){
+            return Optional.of(getParameter(matches));
+        }else{
+            return Optional.empty(); // throw error or trigger badRequest
         }
-        return (matches.size() == 1) ? Optional.of(matches.get(0)) : Optional.empty();
     }
 
-    private void setResponse(HttpServletResponse response, Integer statusCode, String message) {
-        try {
+    private String getParameter(List<String> matches) {
+        String [] words = matches.get(0).split("=");
+        return words[1];
+    }
+
+    private List<String> getStrings(String queryString) {
+        List<String> matches = new ArrayList<>();
+        Matcher m = Pattern.compile("target=\\w+")
+                .matcher(queryString);
+        while (m.find()) {
+            matches.add(m.group());
+        }
+        return matches;
+    }
+
+    private void setResponse(HttpServletResponse response, int statusCode, String message) {
+        try{
             response.setStatus(statusCode);
             response.getOutputStream().print(message);
-        } catch (IOException e) {
+        }catch(IOException e){
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
-
-
-    private void sayHello(String target, HttpServletResponse response){
-        setResponse(response, HttpServletResponse.SC_OK, String.format("Hello, %s!", target));
-    }
-
-    private void displayLength(String target, HttpServletResponse response){
-        setResponse(response, HttpServletResponse.SC_OK, String.format("Length: %d", target.length()));
-    }
-
-    private void badRequest(HttpServletResponse response){
-        setResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Bad Request, exactly one target param expected");
-    }
-
-    private void notFound(String target, HttpServletResponse response){
+    private void notFound(HttpServletResponse response, String message) {
         setResponse(response, HttpServletResponse.SC_NOT_FOUND, "Not Found, URI not found");
     }
 }
