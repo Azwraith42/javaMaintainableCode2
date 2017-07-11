@@ -15,10 +15,6 @@ public class Dispatcher implements HttpServletRequestHandler {
         commandMap.put("/length", this::displayLength);
     }
 
-//    private Optional<BiConsumer<Optional<String>, HttpServletResponse> > lookupRoute(String path){
-//        return Optional.ofNullable(commandMap.get(path));
-//    }
-
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if(request == null){
@@ -28,10 +24,7 @@ public class Dispatcher implements HttpServletRequestHandler {
 
         String path = request.getRequestURI();
         String query = request.getQueryString();
-//
-//         Optional<BiConsumer<Optional<String>, HttpServletResponse>> foundRoute =lookupRoute(path);
-//
-//        foundRoute.ifPresent( (route) -> route.accept( singleParameterQuery(query, "target"), response));
+
         commandMap.getOrDefault(path, this::notFound).accept(singleParameterQuery(query, "target"), response);
 
 
