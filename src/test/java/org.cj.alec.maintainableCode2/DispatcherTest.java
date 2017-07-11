@@ -112,7 +112,19 @@ public class DispatcherTest {
         assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Not Found, URI not found"));
     }
 
+    @Test
+    public void validTargetPlusGarbage() throws IOException{
+        //given
+        final HttpServletRequestHandler dispatcher = new Dispatcher();
+        final StubRequest request = new StubRequest("target=world&asdf", "/hello");
+        final StubResponse actual = new StubResponse();
 
+        //when
+        dispatcher.handle(request, actual);
+        //then
+        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_OK));
+        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Hello, world!"));
+    }
 
 
     private class StubRequest extends HttpServletRequestNotImplemented {

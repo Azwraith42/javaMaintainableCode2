@@ -33,7 +33,7 @@ public class Dispatcher implements HttpServletRequestHandler {
         List<String> matches = new ArrayList<>();
         for( String pair : pairs){
             String [] keys = pair.split("=");
-            if(keys.length < 2) return Optional.empty();
+            if(keys.length < 2) continue;
             String key = keys[0];
             if(target.equals(key)){
                 String value = keys[1];
