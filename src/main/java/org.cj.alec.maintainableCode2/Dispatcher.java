@@ -1,14 +1,10 @@
 package org.cj.alec.maintainableCode2;
 
-import javax.activation.CommandMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Dispatcher implements HttpServletRequestHandler {
     private Map<String, BiConsumer<Optional<String>, HttpServletResponse> > commandMap;
@@ -73,21 +69,19 @@ public class Dispatcher implements HttpServletRequestHandler {
 
 
     private void sayHello(Optional<String> maybeTarget, HttpServletResponse response){
+        if(!maybeTarget.isPresent()) badRequest(response);
+
         maybeTarget.ifPresent( (target) -> {
             setResponse(response, HttpServletResponse.SC_OK, String.format("Hello, %s!", target));
         });
-        if(!maybeTarget.isPresent()){
-            badRequest(response);
-        }
     }
 
     private void displayLength(Optional<String> maybeTarget, HttpServletResponse response){
+        if(!maybeTarget.isPresent()) badRequest(response);
+
         maybeTarget.ifPresent( (target) -> {
             setResponse(response, HttpServletResponse.SC_OK, String.format("Length: %d", target.length()));
         });
-        if(!maybeTarget.isPresent()){
-            badRequest(response);
-        }
     }
 
     private void badRequest(HttpServletResponse response){

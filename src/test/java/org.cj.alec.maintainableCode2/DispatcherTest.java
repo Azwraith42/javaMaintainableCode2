@@ -3,7 +3,6 @@ package org.cj.alec.maintainableCode2;
 import org.junit.Test;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.ByteArrayOutputStream;
