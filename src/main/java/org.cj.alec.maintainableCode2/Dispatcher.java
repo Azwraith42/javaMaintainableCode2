@@ -16,18 +16,15 @@ public class Dispatcher implements HttpServletRequestHandler {
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void handle(HttpServletRequest request, HttpServletResponse response) {
         if(request == null){
             notFound(Optional.empty(), response);
             return;
         }
-
         String path = request.getRequestURI();
         String query = request.getQueryString();
 
         commandMap.getOrDefault(path, this::notFound).accept(singleParameterQuery(query, "target"), response);
-
-
     }
 
     private Optional<String> singleParameterQuery(String query, String target){
