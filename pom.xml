@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.cj.alec.maintainableCode2</groupId>
-    <artifactId>maintainable-code</artifactId>
+    <artifactId>maintainable-code-2</artifactId>
     <version>1.0</version>
     <packaging>war</packaging>
 
