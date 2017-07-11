@@ -56,18 +56,12 @@ public class Dispatcher implements HttpServletRequestHandler {
 
     private void sayHello(Optional<String> maybeTarget, HttpServletResponse response){
         if(!maybeTarget.isPresent()) badRequest(response);
-
-        maybeTarget.ifPresent( (target) -> {
-            setResponse(response, HttpServletResponse.SC_OK, String.format("Hello, %s!", target));
-        });
+        maybeTarget.ifPresent( (target) -> setResponse(response, HttpServletResponse.SC_OK, String.format("Hello, %s!", target)));
     }
 
     private void displayLength(Optional<String> maybeTarget, HttpServletResponse response){
         if(!maybeTarget.isPresent()) badRequest(response);
-
-        maybeTarget.ifPresent( (target) -> {
-            setResponse(response, HttpServletResponse.SC_OK, String.format("Length: %d", target.length()));
-        });
+        maybeTarget.ifPresent( (target) -> setResponse(response, HttpServletResponse.SC_OK, String.format("Length: %d", target.length())));
     }
 
     private void badRequest(HttpServletResponse response){
