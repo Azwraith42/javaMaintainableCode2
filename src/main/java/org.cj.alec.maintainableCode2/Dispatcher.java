@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 
 public class Dispatcher implements HttpServletRequestHandler {
-    private Map<String, BiConsumer<Optional<String>, HttpServletResponse> > commandMap;
+    private Map<String, BiConsumer<String, HttpServletResponse> > commandMap;
 
     Dispatcher(){
         commandMap = new HashMap<>();
@@ -17,18 +17,23 @@ public class Dispatcher implements HttpServletRequestHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) {
-        if(request == null){
-            notFound(Optional.empty(), response);
-            return;
+        try {
+            handleWithoutExceptionHandling(request, response);
+        } catch(Exception ex){
+            setResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Something went wrong");
         }
-        String path = request.getRequestURI();
-        String query = request.getQueryString();
-
-        commandMap.getOrDefault(path, this::notFound).accept(singleParameterQuery(query, "target"), response);
     }
 
-    private Optional<String> singleParameterQuery(String query, String target){
-        if (query == null) return Optional.empty();
+    private void handleWithoutExceptionHandling(HttpServletRequest request, HttpServletResponse response) {
+        String path = request.getRequestURI();
+        String query = request.getQueryString();
+        Optional<String> maybeTarget = maybeGetSingleParameterFromQuery(query, "target");
+
+        maybeTarget.ifPresent( (target) -> commandMap.getOrDefault(path, this::notFound).accept(target, response));
+        if(!maybeTarget.isPresent()) badRequest(response);
+    }
+
+    private Optional<String> maybeGetSingleParameterFromQuery(String query, String target){
         String[] pairs = query.split("&");
         List<String> matches = new ArrayList<>();
         for( String pair : pairs){
@@ -54,21 +59,19 @@ public class Dispatcher implements HttpServletRequestHandler {
 
 
 
-    private void sayHello(Optional<String> maybeTarget, HttpServletResponse response){
-        if(!maybeTarget.isPresent()) badRequest(response);
-        maybeTarget.ifPresent( (target) -> setResponse(response, HttpServletResponse.SC_OK, String.format("Hello, %s!", target)));
+    private void sayHello(String target, HttpServletResponse response){
+        setResponse(response, HttpServletResponse.SC_OK, String.format("Hello, %s!", target));
     }
 
-    private void displayLength(Optional<String> maybeTarget, HttpServletResponse response){
-        if(!maybeTarget.isPresent()) badRequest(response);
-        maybeTarget.ifPresent( (target) -> setResponse(response, HttpServletResponse.SC_OK, String.format("Length: %d", target.length())));
+    private void displayLength(String target, HttpServletResponse response){
+        setResponse(response, HttpServletResponse.SC_OK, String.format("Length: %d", target.length()));
     }
 
     private void badRequest(HttpServletResponse response){
         setResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Bad Request, exactly one target param expected");
     }
 
-    private void notFound(Optional<String> maybeTarget, HttpServletResponse response){
+    private void notFound(String target, HttpServletResponse response){
         setResponse(response, HttpServletResponse.SC_NOT_FOUND, "Not Found, URI not found");
     }
 }

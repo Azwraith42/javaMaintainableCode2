@@ -94,8 +94,8 @@ public class DispatcherTest {
         //when
         dispatcher.handle(request, actual);
         //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_BAD_REQUEST));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Bad Request, exactly one target param expected"));
+        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Something went wrong"));
     }
 
     @Test
@@ -108,8 +108,8 @@ public class DispatcherTest {
         dispatcher.handle(null, actual);
 
         //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_NOT_FOUND));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Not Found, URI not found"));
+        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
+        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Something went wrong"));
     }
 
     @Test
