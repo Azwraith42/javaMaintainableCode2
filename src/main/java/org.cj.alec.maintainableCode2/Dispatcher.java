@@ -40,11 +40,7 @@ public class Dispatcher implements HttpServletRequestHandler {
                 matches.add(value);
             }
         }
-        if(matches.size() == 1){
-            return Optional.of(matches.get(0));
-        }else{
-            return Optional.empty();
-        }
+        return (matches.size() == 1) ? Optional.of(matches.get(0)) : Optional.empty();
     }
 
     private void setResponse(HttpServletResponse response, Integer statusCode, String message) {
