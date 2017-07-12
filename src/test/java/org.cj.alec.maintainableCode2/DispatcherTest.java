@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -14,116 +13,38 @@ import static org.junit.Assert.assertThat;
 
 public class DispatcherTest {
 
+    public HttpServletRequestHandler newDispatcher(){
+        final RouteController routeController = new RouteController();
+        final HttpServletRequestHandler dispatcher = new Dispatcher(routeController);
+        return dispatcher;
+    }
+
     @Test
-    public void helloWorld() throws IOException {
+    public void dispatchToRouteController() throws IOException{
         //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest("target=world", "/hello");
+        final HttpServletRequestHandler dispatcher = newDispatcher();
+        final StubRequest request = new StubRequest("target=cat", "/hello");
         final StubResponse actual = new StubResponse();
 
         //when
         dispatcher.handle(request, actual);
+
         //then
         assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_OK));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Hello, world!"));
     }
 
     @Test
-    public void lengthOfAlec() throws IOException{
+    public void nullRequestReturnsServerError() throws IOException{
         //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest("target=Alec", "/length");
+        final HttpServletRequestHandler dispatcher = newDispatcher();
         final StubResponse actual = new StubResponse();
+        final StubRequest request = null;
 
         //when
         dispatcher.handle(request, actual);
-        //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_OK));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Length: 4"));
-    }
 
-    @Test
-    public void wrongPath() throws IOException{
-        //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest("target=Alec", "/xxx");
-        final StubResponse actual = new StubResponse();
-
-        //when
-        dispatcher.handle(request, actual);
-        //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_NOT_FOUND));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Not Found, URI not found"));
-    }
-
-    @Test
-    public void nullPathIsHandled() throws IOException{
-        //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest("target=Alec", null);
-        final StubResponse actual = new StubResponse();
-
-        //when
-        dispatcher.handle(request, actual);
-        //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_NOT_FOUND));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Not Found, URI not found"));
-    }
-
-    @Test
-    public void doNotAllowMultipleTargets() throws IOException{
-        //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest("target=Alec&target=cat", "/hello");
-        final StubResponse actual = new StubResponse();
-
-        //when
-        dispatcher.handle(request, actual);
-        //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_BAD_REQUEST));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Bad Request, exactly one target param expected"));
-    }
-
-    @Test
-    public void nullQueryIsHandled() throws IOException{
-        //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest(null, "/hello");
-        final StubResponse actual = new StubResponse();
-
-        //when
-        dispatcher.handle(request, actual);
         //then
         assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_INTERNAL_SERVER_ERROR));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Something went wrong"));
-    }
-
-    @Test
-    public void validTargetPlusGarbage() throws IOException{
-        //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest("target=world&asdf", "/hello");
-        final StubResponse actual = new StubResponse();
-
-        //when
-        dispatcher.handle(request, actual);
-        //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_OK));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Hello, world!"));
-    }
-
-    @Test
-    public void ignoreExtraThings() throws IOException {
-        //given
-        final HttpServletRequestHandler dispatcher = new Dispatcher();
-        final StubRequest request = new StubRequest("cat=dog&target=world&foo=bar", "/hello");
-        final StubResponse actual = new StubResponse();
-
-        //when
-        dispatcher.handle(request, actual);
-        //then
-        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_OK));
-        assertThat(new String(actual.byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8), equalTo("Hello, world!"));
     }
 
 
@@ -156,6 +77,10 @@ public class DispatcherTest {
         int lastStatus = -1;
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
+        public String currentOutputStream(){
+            return new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+        }
+
         @Override
         public void setStatus(int sc) {
             lastStatus = sc;
@@ -171,4 +96,5 @@ public class DispatcherTest {
             };
         }
     }
+
 }
