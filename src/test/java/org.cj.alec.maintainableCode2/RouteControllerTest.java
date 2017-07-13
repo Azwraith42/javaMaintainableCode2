@@ -78,6 +78,22 @@ public class RouteControllerTest {
         assertThat(actual.currentOutputStream(), equalTo("Bad Request, exactly one target param expected"));
     }
 
+    @Test
+    public void badPathIsNotFound(){
+        //given
+        final RouteController rc = new RouteController();
+        final StubResponse actual = new StubResponse();
+        final String path = "/xxx";
+        final String query = null;
+
+        //when
+        rc.handleRoute(path, query, actual);
+
+        //then
+        assertThat(actual.lastStatus, equalTo(HttpServletResponse.SC_BAD_REQUEST));
+        assertThat(actual.currentOutputStream(), equalTo("Bad Request, exactly one target param expected"));
+    }
+
 
 
     private class StubResponse extends HttpServletResponseNotImplemented {

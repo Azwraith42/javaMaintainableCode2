@@ -16,7 +16,11 @@ class RouteController {
 
     void handleRoute(String path, String query, HttpServletResponse response){
         Optional<String> parameter = GetTargetFromString.getSingleStringParameterFromQuery(query);
-        parameter.ifPresent( (target) -> commandMap.getOrDefault(path, this::notFound).makeResponse(response, target));
+        Route route = commandMap.getOrDefault(path, this::notFound);
+
+        parameter.ifPresent( (target) -> route.makeResponse(response, target));
+
+
         if(!parameter.isPresent()) badRequest(response);
     }
 
@@ -28,3 +32,4 @@ class RouteController {
         ResponseMutator.setResponse(response, HttpServletResponse.SC_NOT_FOUND, "Not Found, URI not found");
     }
 }
+
