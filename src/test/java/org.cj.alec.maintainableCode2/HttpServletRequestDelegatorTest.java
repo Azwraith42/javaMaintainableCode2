@@ -94,10 +94,10 @@ public class HttpServletRequestDelegatorTest {
     class DispatcherStub implements Dispatcher{
         List<Invocation> invocations = new ArrayList<>();
         @Override
-        public void handle(String path, String query, HttpServletResponse response) throws IOException {
+        public ResponseTuple handle(String path, String query) throws IOException {
             Invocation invocation = new Invocation(path, query);
             invocations.add(invocation);
-            response.getOutputStream().write("some stuff".getBytes());
+            return new ResponseTuple(200, "some stuff");
         }
     }
 }

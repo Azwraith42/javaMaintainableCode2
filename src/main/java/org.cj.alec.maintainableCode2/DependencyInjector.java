@@ -2,8 +2,8 @@ package org.cj.alec.maintainableCode2;
 
 final class DependencyInjector {
 
-    HttpRouteController routeController = new HttpRouteController();
-    HttpServletRequestDispatcher dispatcher = new HttpServletRequestDispatcher(routeController);
+    HttpRouter routeController = new HttpRouter();
+    RequestDispatcher dispatcher = new RequestDispatcher(routeController);
 
     HttpServletrequestHandler httpServeletRequestHandler = new HttpServletRequestDelegator(dispatcher);
 }

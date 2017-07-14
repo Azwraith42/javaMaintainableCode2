@@ -23,6 +23,11 @@ public class HttpServletRequestDelegator implements HttpServletrequestHandler {
     private void tryDispatch(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String path = request.getRequestURI();
         final String query = request.getQueryString();
-        dispatcher.handle(path, query, response);
+        final ResponseTuple responseTuple = dispatcher.handle(path, query);
+        makeResonse(response, responseTuple);
+    }
+
+    private void makeResonse(HttpServletResponse response, ResponseTuple responseTuple){
+        ResponseMutator.setResponse(response, responseTuple.statusCode, responseTuple.responseMessage);
     }
 }

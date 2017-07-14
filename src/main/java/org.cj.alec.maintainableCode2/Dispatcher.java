@@ -4,5 +4,5 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 interface Dispatcher{
-    void handle(String path, String query, HttpServletResponse response) throws IOException;
+    ResponseTuple handle(String path, String query) throws IOException;
 }
