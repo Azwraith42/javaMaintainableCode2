@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class HttpServletRequestDelegator implements HttpServletrequestHandler {
+public class HttpServletRequestDelegator implements HttpServletRequestHandler {
     final private Dispatcher dispatcher;
 
     HttpServletRequestDelegator(Dispatcher dispatcher){
@@ -24,10 +24,10 @@ public class HttpServletRequestDelegator implements HttpServletrequestHandler {
         final String path = request.getRequestURI();
         final String query = request.getQueryString();
         final ResponseTuple responseTuple = dispatcher.handle(path, query);
-        makeResonse(response, responseTuple);
+        makeRepsonse(response, responseTuple);
     }
 
-    private void makeResonse(HttpServletResponse response, ResponseTuple responseTuple){
+    private void makeRepsonse(HttpServletResponse response, ResponseTuple responseTuple){
         ResponseMutator.setResponse(response, responseTuple.statusCode, responseTuple.responseMessage);
     }
 }

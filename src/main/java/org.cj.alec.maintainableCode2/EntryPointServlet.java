@@ -11,6 +11,6 @@ public class EntryPointServlet extends HttpServlet{
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        dependencyInjector.httpServeletRequestHandler.handle(req, resp);
+        dependencyInjector.httpServletRequestHandler.handle(req, resp);
     }
 }

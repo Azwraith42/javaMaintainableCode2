@@ -1,9 +1,17 @@
 package org.cj.alec.maintainableCode2;
 
+import java.util.HashMap;
+import java.util.Map;
+
 final class DependencyInjector {
 
-    HttpRouter routeController = new HttpRouter();
-    RequestDispatcher dispatcher = new RequestDispatcher(routeController);
+    private Map<String, Route> routeMap = new HashMap<>();
+    private HttpRouter router = new HttpRouter(routeMap);
+    private RequestDispatcher dispatcher = new RequestDispatcher(router);
+    HttpServletRequestHandler httpServletRequestHandler = new HttpServletRequestDelegator(dispatcher);
 
-    HttpServletrequestHandler httpServeletRequestHandler = new HttpServletRequestDelegator(dispatcher);
+    public DependencyInjector() {
+        routeMap.put("/hello", new RouteHello());
+        routeMap.put("/length", new RouteLength());
+    }
 }
