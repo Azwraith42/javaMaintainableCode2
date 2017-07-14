@@ -13,7 +13,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
-public class HttpServletRequestNotImplemented implements HttpServletRequest {
+public abstract class HttpServletRequestNotImplemented implements HttpServletRequest {
     @Override
     public String getAuthType() {
         throw new UnsupportedOperationException("Not Implemented!");

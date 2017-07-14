@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class EntryPointServlet extends HttpServlet{
-    private static DependencyInjection dependencyInjection = new DependencyInjection();
+    private static DependencyInjector dependencyInjector = new DependencyInjector();
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        dependencyInjection.httpServletRequestHandler.handle(request, response);
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        dependencyInjector.httpServeletRequestHandler.handle(req, resp);
     }
 }

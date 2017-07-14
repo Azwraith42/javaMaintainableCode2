@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Locale;
 
-public class HttpServletResponseNotImplemented implements HttpServletResponse{
+public abstract class HttpServletResponseNotImplemented implements HttpServletResponse {
     @Override
     public void addCookie(Cookie cookie) {
         throw new UnsupportedOperationException("Not Implemented!");
