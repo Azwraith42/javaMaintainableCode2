@@ -2,20 +2,11 @@ package org.cj.alec.maintainableCode2;
 
 import org.junit.Test;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
 import java.util.*;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -2,11 +2,8 @@ package org.cj.alec.maintainableCode2;
 
 final class DependencyInjector {
 
-    // routeController
-    // routes
-    // getSingleParameterFromQuery
-    // response mutator
-    HttpServletRequestDispatcher dispatcher = new HttpServletRequestDispatcher();
+    HttpRouteController routeController = new HttpRouteController();
+    HttpServletRequestDispatcher dispatcher = new HttpServletRequestDispatcher(routeController);
 
     HttpServletrequestHandler httpServeletRequestHandler = new HttpServletRequestDelegator(dispatcher);
 }
