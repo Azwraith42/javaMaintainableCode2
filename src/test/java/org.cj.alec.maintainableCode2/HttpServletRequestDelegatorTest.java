@@ -30,6 +30,7 @@ public class HttpServletRequestDelegatorTest {
         Invocation invocation = dispatcher.invocations.get(0);
         assertThat(invocation.path, is(path));
         assertThat(invocation.query, is(query));
+        assertThat(response.status, is(HttpServletResponse.SC_OK));
         assertThat(response.getWhatWasWrittenToOutputAsUtf8String(), is("some stuff"));
     }
 
@@ -86,10 +87,6 @@ public class HttpServletRequestDelegatorTest {
             this.query = query;
         }
     }
-
-//    interface Dispatcher{
-//        void handle(String path, String query, HttpServletResponse response);
-//    }
 
     class DispatcherStub implements Dispatcher{
         List<Invocation> invocations = new ArrayList<>();

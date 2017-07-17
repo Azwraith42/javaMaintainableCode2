@@ -8,10 +8,6 @@ import java.util.regex.Pattern;
 
 final class GetTargetFromString {
 
-    private GetTargetFromString(){
-
-    }
-
     static Optional<String> getSingleStringParameterFromQuery(String queryString) {
         if(queryString == null) return Optional.empty();
         List<String> matches = getStrings(queryString);

@@ -25,4 +25,20 @@ public class HttpRouterTest {
         //then
         assertThat(gottenRoute, is(hello));
     }
+
+    @Test
+    public void routeNotFound(){
+        //given
+        final Map<String, Route> routeMap = new HashMap<>();
+        final Route notFound = new RouteNotFound();
+        final String routeRequest = "/someRoute";
+        final HttpRouter router = new HttpRouter(routeMap);
+        final Route gottenRoute;
+
+        //when
+        gottenRoute = router.getRoute(routeRequest);
+
+        //then
+        assertThat(gottenRoute.toString(), is(notFound.toString()));
+    }
 }

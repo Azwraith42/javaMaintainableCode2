@@ -8,4 +8,9 @@ public class RouteNotFound implements Route {
     public ResponseTuple getResponseTuple(Optional<String> maybeTarget) {
         return new ResponseTuple(HttpServletResponse.SC_NOT_FOUND, "Not Found");
     }
+
+    @Override
+    public String toString() {
+        return "Class: RouteNotFound, Implements: Route";
+    }
 }

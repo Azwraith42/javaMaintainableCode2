@@ -1,6 +1,5 @@
 package org.cj.alec.maintainableCode2;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRouter implements Router {
