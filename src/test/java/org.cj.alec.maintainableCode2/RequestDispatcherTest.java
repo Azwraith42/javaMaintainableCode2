@@ -17,14 +17,14 @@ public class RequestDispatcherTest {
         final RequestDispatcher dispatcher = new RequestDispatcher(routeController);
         final String path = "/hello";
         final String query = "some query";
-        final ResponseTuple rt;
+        final ResponseTuple responseTuple;
 
         //when
-        rt = dispatcher.handle(path, query);
+        responseTuple = dispatcher.handle(path, query);
 
         //then
-        assertThat(rt.responseMessage, is("Hello, world!"));
-        assertThat(rt.statusCode, is(HttpServletResponse.SC_OK));
+        assertThat(responseTuple.responseMessage, is("Hello, world!"));
+        assertThat(responseTuple.statusCode, is(HttpServletResponse.SC_OK));
     }
 
     class RouterStub implements Router {
