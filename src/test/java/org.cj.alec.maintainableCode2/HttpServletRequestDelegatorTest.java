@@ -82,7 +82,7 @@ public class HttpServletRequestDelegatorTest {
         final String path;
         final String query;
 
-        public Invocation(String path, String query) {
+        Invocation(String path, String query) {
             this.path = path;
             this.query = query;
         }

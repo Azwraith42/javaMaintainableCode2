@@ -5,7 +5,7 @@ import java.util.Optional;
 public class RequestDispatcher implements Dispatcher {
     private final RouteMap routeMap;
 
-    public RequestDispatcher(RouteMap routeMap) {
+    RequestDispatcher(RouteMap routeMap) {
         this.routeMap = routeMap;
     }
 

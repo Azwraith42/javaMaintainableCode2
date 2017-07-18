@@ -21,7 +21,7 @@ public class RouteMapTest {
         verifyRoute(routeMap, "/foo", DefaultRouteForTest.class);
     }
 
-    void verifyRoute(RouteMap routeMap, String name, Class<? extends Route> expectedClass){
+    private void verifyRoute(RouteMap routeMap, String name, Class<? extends Route> expectedClass){
         Route route = routeMap.getOrDefault(name);
         Class<? extends Route> actualClass = route.getClass();
         String actualClassName = actualClass.getName();

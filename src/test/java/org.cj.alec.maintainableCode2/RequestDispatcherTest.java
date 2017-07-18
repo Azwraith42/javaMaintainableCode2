@@ -33,7 +33,7 @@ public class RequestDispatcherTest {
     }
 
     class RouteMapStub extends RouteMap{
-        public RouteMapStub(Route defaultRoute) {
+        RouteMapStub(Route defaultRoute) {
             super(defaultRoute);
         }
 

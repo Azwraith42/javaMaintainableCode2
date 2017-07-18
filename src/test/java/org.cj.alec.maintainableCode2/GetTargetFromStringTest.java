@@ -20,6 +20,6 @@ public class GetTargetFromStringTest {
 
         //then
         assertThat(actual.isPresent(), is(true));
-        assertThat(actual.get(), is("world"));
+        assertThat(actual.get(), is(expected));
     }
 }

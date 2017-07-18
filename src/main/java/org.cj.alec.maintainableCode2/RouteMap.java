@@ -7,7 +7,7 @@ public class RouteMap {
     private final Map<String, Route> routeMap = new HashMap<>();
     private final Route defaultRoute;
 
-    public RouteMap(Route defaultRoute) {
+    RouteMap(Route defaultRoute) {
         routeMap.put("/hello", new RouteHello());
         routeMap.put("/length", new RouteLength());
         this.defaultRoute = defaultRoute;
