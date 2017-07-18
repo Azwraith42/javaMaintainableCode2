@@ -24,10 +24,10 @@ public class HttpServletRequestDelegator implements HttpServletRequestHandler {
         final String path = request.getRequestURI();
         final String query = request.getQueryString();
         final ResponseTuple responseTuple = dispatcher.handle(path, query);
-        makeRepsonse(response, responseTuple);
+        printResponse(response, responseTuple);
     }
 
-    private void makeRepsonse(HttpServletResponse response, ResponseTuple responseTuple){
+    private void printResponse(HttpServletResponse response, ResponseTuple responseTuple){
         ResponseMutator.setResponse(response, responseTuple.statusCode, responseTuple.responseMessage);
     }
 }

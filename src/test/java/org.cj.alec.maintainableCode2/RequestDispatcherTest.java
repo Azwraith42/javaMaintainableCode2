@@ -3,45 +3,45 @@ package org.cj.alec.maintainableCode2;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class RequestDispatcherTest {
 
+    // ask Sean, do I need to test the Dispatcher when it doesn't do anything itself?
+    // no logic is actually done in my dispatcher, it's all delegated out.
+
     @Test
     public void dispatchToHello(){
         //given
-        final RouterStub routeController = new RouterStub();
-        final RequestDispatcher dispatcher = new RequestDispatcher(routeController);
+        final Route defaultRoute = new RouteNotFound();
+        final RouteMapStub routeMap = new RouteMapStub(defaultRoute);
+        final RequestDispatcher dispatcher = new RequestDispatcher(routeMap);
         final String path = "/hello";
-        final String query = "some query";
+        final String query = "target=world";
+        final String responseMessage = "Hello, world!";
         final ResponseTuple responseTuple;
+        final ResponseTuple expected = new ResponseTuple(HttpServletResponse.SC_OK, responseMessage);
 
         //when
         responseTuple = dispatcher.handle(path, query);
 
         //then
-        assertThat(responseTuple.responseMessage, is("Hello, world!"));
-        assertThat(responseTuple.statusCode, is(HttpServletResponse.SC_OK));
+        assertThat(responseTuple.statusCode, is(expected.statusCode));
+        assertThat(responseTuple.responseMessage, is(expected.responseMessage));
     }
 
-    class RouterStub implements Router {
-        final private Route hello = new RouteHelloStub();
+    class RouteMapStub extends RouteMap{
+        public RouteMapStub(Route defaultRoute) {
+            super(defaultRoute);
+        }
 
         @Override
-        public Route getRoute(String path) {
-            return hello;
+        public Route getOrDefault(String name) {
+            return super.getOrDefault(name);
         }
     }
 
-    class RouteHelloStub implements Route {
-        private final ResponseTuple rt = new ResponseTuple(HttpServletResponse.SC_OK, "Hello, world!");
 
-        @Override
-        public ResponseTuple getResponseTuple(Optional<String> maybeTarget) {
-            return rt;
-        }
-    }
 }
