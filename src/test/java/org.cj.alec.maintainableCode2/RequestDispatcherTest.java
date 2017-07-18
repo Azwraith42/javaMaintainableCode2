@@ -11,16 +11,15 @@ import static org.junit.Assert.assertThat;
 public class RequestDispatcherTest {
 
     @Test
-    public void dispatcherHappyPath(){
+    public void dispatchTest(){
         //given
+        final ResponseTuple responseTuple;
+        final ResponseTuple expectedResponseTuple = new ResponseTuple(HttpServletResponse.SC_OK, "Hello, someTarget!");
         Route defaultRoute = new DefaultRouteForTest();
-        RouteMapStub routeMap = new RouteMapStub(defaultRoute);
+        RouteMapStub routeMap = new RouteMapStub(defaultRoute, expectedResponseTuple);
         RequestDispatcher requestDispatcher = new RequestDispatcher(routeMap);
         String path = "some path";
         String query = "target=someTarget";
-        final ResponseTuple responseTuple;
-        final ResponseTuple expectedResponseTuple = new ResponseTuple(HttpServletResponse.SC_OK, "Hello, someTarget!");
-
 
         //when
         responseTuple = requestDispatcher.handle(path, query);
@@ -32,13 +31,16 @@ public class RequestDispatcherTest {
 
 
     class RouteMapStub extends RouteMap{
-        RouteMapStub(Route defaultRoute) {
+        ResponseTuple rt;
+
+        public RouteMapStub(Route defaultRoute, ResponseTuple rt) {
             super(defaultRoute);
+            this.rt = rt;
         }
 
         @Override
         public Route getOrDefault(String name) {
-            return new happyPathRouteStubForTest();
+            return new HelloRouteForTest(rt);
         }
     }
 
@@ -49,12 +51,16 @@ public class RequestDispatcherTest {
         }
     }
 
-    class happyPathRouteStubForTest implements Route {
+    class HelloRouteForTest implements Route {
+        private ResponseTuple rt;
+
+        public HelloRouteForTest(ResponseTuple rt) {
+            this.rt = rt;
+        }
+
         @Override
         public ResponseTuple getResponseTuple(Optional<String> maybeTarget) {
-            return maybeTarget.map((target) -> new ResponseTuple(HttpServletResponse.SC_OK, String.format("Hello, %s!", target))).orElseGet(
-                    () -> new ResponseTuple(HttpServletResponse.SC_BAD_REQUEST, "Bad Request")
-            );
+            return rt;
         }
     }
 
