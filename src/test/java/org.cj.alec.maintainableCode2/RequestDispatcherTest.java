@@ -3,34 +3,33 @@ package org.cj.alec.maintainableCode2;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class RequestDispatcherTest {
 
-    // ask Sean, do I need to test the Dispatcher when it doesn't do anything itself?
-    // no logic is actually done in my dispatcher, it's all delegated out.
-
     @Test
-    public void dispatchToHello(){
+    public void dispatcherHappyPath(){
         //given
-        final Route defaultRoute = new RouteNotFound();
-        final RouteMapStub routeMap = new RouteMapStub(defaultRoute);
-        final RequestDispatcher dispatcher = new RequestDispatcher(routeMap);
-        final String path = "/hello";
-        final String query = "target=world";
-        final String responseMessage = "Hello, world!";
+        Route defaultRoute = new DefaultRouteForTest();
+        RouteMapStub routeMap = new RouteMapStub(defaultRoute);
+        RequestDispatcher requestDispatcher = new RequestDispatcher(routeMap);
+        String path = "some path";
+        String query = "target=someTarget";
         final ResponseTuple responseTuple;
-        final ResponseTuple expected = new ResponseTuple(HttpServletResponse.SC_OK, responseMessage);
+        final ResponseTuple expectedResponseTuple = new ResponseTuple(HttpServletResponse.SC_OK, "Hello, someTarget!");
+
 
         //when
-        responseTuple = dispatcher.handle(path, query);
+        responseTuple = requestDispatcher.handle(path, query);
 
-        //then
-        assertThat(responseTuple.statusCode, is(expected.statusCode));
-        assertThat(responseTuple.responseMessage, is(expected.responseMessage));
+
+        assertThat(responseTuple.responseMessage, is(expectedResponseTuple.responseMessage));
+        assertThat(responseTuple.statusCode, is(expectedResponseTuple.statusCode));
     }
+
 
     class RouteMapStub extends RouteMap{
         RouteMapStub(Route defaultRoute) {
@@ -39,7 +38,23 @@ public class RequestDispatcherTest {
 
         @Override
         public Route getOrDefault(String name) {
-            return super.getOrDefault(name);
+            return new happyPathRouteStubForTest();
+        }
+    }
+
+    class DefaultRouteForTest implements Route {
+        @Override
+        public ResponseTuple getResponseTuple(Optional<String> maybeTarget) {
+            return new ResponseTuple(HttpServletResponse.SC_NOT_FOUND, "Default Route returned");
+        }
+    }
+
+    class happyPathRouteStubForTest implements Route {
+        @Override
+        public ResponseTuple getResponseTuple(Optional<String> maybeTarget) {
+            return maybeTarget.map((target) -> new ResponseTuple(HttpServletResponse.SC_OK, String.format("Hello, %s!", target))).orElseGet(
+                    () -> new ResponseTuple(HttpServletResponse.SC_BAD_REQUEST, "Bad Request")
+            );
         }
     }
 
